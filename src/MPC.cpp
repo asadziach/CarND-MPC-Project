@@ -25,9 +25,11 @@ class FG_eval {
  public:
   // Fitted polynomial coefficients
   Eigen::VectorXd coeffs;
-  FG_eval(Eigen::VectorXd coeffs) { this->coeffs = coeffs; }
+  FG_eval(Eigen::VectorXd coeffs) {
+    this->coeffs = coeffs;
+  }
 
-  typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
+  typedef CPPAD_TESTVECTOR(AD<double>)ADvector;
   void operator()(ADvector& fg, const ADvector& vars) {
     // TODO: implement MPC
     // `fg` a vector of the cost constraints, `vars` is a vector of variable values (state & actuators)
@@ -39,13 +41,15 @@ class FG_eval {
 //
 // MPC class definition implementation.
 //
-MPC::MPC() {}
-MPC::~MPC() {}
+MPC::MPC() {
+}
+MPC::~MPC() {
+}
 
 vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   bool ok = true;
   size_t i;
-  typedef CPPAD_TESTVECTOR(double) Dvector;
+  typedef CPPAD_TESTVECTOR(double)Dvector;
 
   // TODO: Set the number of model variables (includes both states and inputs).
   // For example: If the state is a 4 element vector, the actuators is a 2
@@ -101,9 +105,10 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   CppAD::ipopt::solve_result<Dvector> solution;
 
   // solve the problem
-  CppAD::ipopt::solve<Dvector, FG_eval>(
-      options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound,
-      constraints_upperbound, fg_eval, solution);
+  CppAD::ipopt::solve<Dvector, FG_eval>(options, vars, vars_lowerbound,
+                                        vars_upperbound, constraints_lowerbound,
+                                        constraints_upperbound, fg_eval,
+                                        solution);
 
   // Check some of the solution values
   ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
