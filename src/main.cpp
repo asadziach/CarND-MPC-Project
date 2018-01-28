@@ -12,6 +12,9 @@
 // for convenience
 using json = nlohmann::json;
 
+const double Lf = 2.67;
+const double dt = 0.1;  // latency;
+
 // For converting back and forth between radians and degrees.
 constexpr double pi() {
   return M_PI;
@@ -131,8 +134,13 @@ int main() {
             double steer_value = j[1]["steering_angle"];
             double throttle_value = j[1]["throttle"];
 
+            // Above, I made x,y,psi all zero
+            px = v * dt;// simplification of x + v*cos(psi)*dt
+            py = 0;// simplification of y + v*sin(psi)*dt
+            psi = -v/Lf * steer_value * dt;
+
             Eigen::VectorXd state(6);
-            state << 0, 0, 0, v, cte, epsi;  // I made x,y,psi all zero
+            state << px, py, psi, v, cte, epsi;
 
             auto vars = mpc.Solve(state, coeffs);
 
