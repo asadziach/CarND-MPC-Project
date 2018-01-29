@@ -76,7 +76,6 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
 
 int main() {
   uWS::Hub h;
-
   // MPC is initialized here!
   MPC mpc;
 
@@ -102,13 +101,11 @@ int main() {
             double v = j[1]["speed"];
 
             /*
-             * TODO: Calculate steering angle and throttle using MPC.
-             *
+             * Calculate steering angle and throttle using MPC.
              * Both are in between [-1, 1].
-             *
              */
             // This is to help with the polyfit
-            for (unsigned i = 0; i < ptsx.size(); i++) {
+            for (size_t i = 0; i < ptsx.size(); i++) {
 
               // Put car at origin and make x,y relative to this.
               double shift_x = ptsx[i] - px;
@@ -134,9 +131,13 @@ int main() {
             double steer_value = j[1]["steering_angle"];
             double throttle_value = j[1]["throttle"];
 
-            // Above, I made x,y,psi all zero
-            px = v * dt;// simplification of x + v*cos(psi)*dt
-            py = 0;// simplification of y + v*sin(psi)*dt
+            /* Latency handling.
+             * Previously, I made x,y,psi all zero
+             * simplification of x + v*cos(psi)*dt is v*dt
+             * simplification of y + v*sin(psi)*dt is 0
+             */
+            px = v * dt;
+            py = 0;
             psi = -v/Lf * steer_value * dt;
 
             Eigen::VectorXd state(6);
@@ -157,7 +158,7 @@ int main() {
             }
 
             json msgJson;
-            // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
+            // Divide by deg2rad(25) before sending the steering value back.
             // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
             double Lf = 2.67;
             steer_value = vars[0]/(deg2rad(25)*Lf);
@@ -172,7 +173,7 @@ int main() {
 
             //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
             // the points in the simulator are connected by a Green line
-            for (unsigned i = 2; i < vars.size(); i++) {
+            for (size_t i = 2; i < vars.size(); i++) {
               if(i%2 == 0) {
                 mpc_x_vals.push_back(vars[i]);
               } else {
@@ -194,12 +195,6 @@ int main() {
             // Latency
             // The purpose is to mimic real driving conditions where
             // the car does actuate the commands instantly.
-            //
-            // Feel free to play around with this value but should be to drive
-            // around the track with 100ms latency.
-            //
-            // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
-            // SUBMITTING.
             this_thread::sleep_for(chrono::milliseconds(100));
             ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
           }
