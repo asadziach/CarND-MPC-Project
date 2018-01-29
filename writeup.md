@@ -32,4 +32,4 @@ Once I receive waypoints from simulator, I make following simplifications. I sub
 ## Latency
 In a real car, an actuation command won't execute instantly. There will be a delay as the command propagates through the system. A realistic delay might be on the order of 100 milliseconds. 
 My solution was to run a simulation using the vehicle model starting from the current state for the duration of the latency. The resulting state from the simulation is the new initial state for MPC.
-Previously, I made x,y,psi all zero This means x + v*cos(psi)*dt simplifies to v*dt and  y + v*sin(psi)*dt simplifies to zero.
+Previously, I made x,y,psi all zero This means x + v* cos(psi)*dt simplifies to v* dt and  y + v*sin(psi)*dt simplifies to zero.
